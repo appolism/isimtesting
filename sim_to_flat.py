@@ -16,11 +16,12 @@ except:
 app = omni.kit.app.get_app()
 frame_count = 0
 robot_pos_np = [0, 0, 0]
+tower_pos_np = [0, 0, 0]
 
 #functions
 def robot_pos_update(event):
 	global frame_count
-	global robot_pos_np
+	global robot_pos_np, tower_pos_np
 	timeline = omni.timeline.get_timeline_interface()
 	if not timeline.is_playing():
 		return
@@ -31,9 +32,14 @@ def robot_pos_update(event):
 		return
 	
 	robot_pos, robot_orientation = xform.get_world_pose("/World/jetbot/chassis")
+	tower_pos, tower_orientation = xform.get_world_pose("/World/tower")
 	robot_pos_np = robot_pos.numpy()
+	tower_pos_np = tower_pos.numpy()
+	
+	
+	file_list = [f"Robot Position(x, y, z): {robot_pos_np[0]}, {robot_pos_np[1]}, {robot_pos_np[2]} \n", f"Tower Position(x, y, z): {tower_pos_np[0]}, {tower_pos_np[1]}, {tower_pos_np[2]}"]
 	with open("sim_to_flat.txt", "w") as f:
-		f.write(f"Position(x, y, z): {robot_pos_np[0]}, {robot_pos_np[1]}, {robot_pos_np[2]}")
+		f.writelines(file_list)
 	
 	with open("sim_to_flat.txt") as f:
 		print(f.read())
@@ -48,6 +54,7 @@ subscription = app.get_update_event_stream().create_subscription_to_pop( robot_p
 	#print(f.read())
 	
 #print("lalala")
+
 
 
 
